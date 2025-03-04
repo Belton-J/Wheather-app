@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Weather</title>
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="eg: India" spellcheck="false">
+            <button> <img src="imgs/magnifier (1).png" alt="search icon"></button>
+        </div>
+        <div class="error">
+            <p>Invalid City Name</p>
+        </div>
+        <div class="weather">
+            <h3 class="cond">Cloudy</h3>
+            <img src="imgs/clouds.png" class="weather-icon" alt="">
+            <h1 class="temp">22 ℃</h1>
+            <div class="location_details">
+                <h2 class="city">Tamil Nadu,</h2>
+                <h2 class="country">India</h2>
+            </div>
+            <div class="details">
+                <div class="col">
+                    <img src="imgs/humidity.png" alt="">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="imgs/weather.png" alt="">
+                    <div>
+                        <p class="wind">15 Km</p>
+                        <p>WindSpeed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const apiurlcity = "http://api.weatherapi.com/v1/current.json";
+    const apikey = "71672c2eff354aefb9f152131250403";
+    const searchtext = document.querySelector(".search input");
+    const searchbtn = document.querySelector(".search button");
+    const weatherIcon = document.querySelector(".weather-icon");
+
+    async function checkweather(city) {
+        try{
+            const response = await fetch(apiurlcity + `?key=${apikey}` + `&q=${city}`);
+
+            if (!response.ok){
+                throw new Error("City not found");
+            }
+        let data = await response.json();
+        console.log(data);
+
+        document.querySelector(".city").innerHTML = data.location.name+", ";
+        document.querySelector(".country").innerHTML = data.location.country;
+        document.querySelector(".temp").innerHTML = Math.round(data.current.temp_c) + "℃";
+        document.querySelector(".humidity").innerHTML = data.current.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.current.wind_kph + " ";
+        document.querySelector(".cond").innerHTML =data.current.condition.text ;
+        document.querySelector(".error").innerHTML = "";
+
+        if (data.current.condition.text == "Cloudy") {
+            weatherIcon.src = "imgs/clouds.png";
+        } else if (data.current.condition.text == "Clear") {
+            weatherIcon.src = "";
+        } else if (data.current.condition.text == "Partly cloudy") {
+            weatherIcon.src = "imgs/clouds.png";
+        } else if (data.current.condition.text == "Rain") {
+            weatherIcon.src = "imgs/rain.png";
+        } else if (data.current.condition.text == "Light rain") {
+            weatherIcon.src = "imgs/rain.png";
+        } else if (data.current.conditiimgs/sun.pngon.text == "Mist") {
+            weatherIcon.src = "imgs/fog.png";
+        } else if (data.current.condition.text == "Moderate rain") {
+            weatherIcon.src = "imgs/rain.png";
+        } else if (data.current.condition.text == "Sunny") {
+            weatherIcon.src = "imgs/sun.png";
+        }
+    }
+         catch (error){
+            console.error("Error: ",error);
+            alert("Invalid city name. Please try again.");
+            document.querySelector(".error").style.display = "block";
+        }
+    }
+
+    searchbtn.addEventListener("click", () => {
+        checkweather(searchtext.value);
+    });
+
+    searchtext.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        checkweather(searchtext.value);
+    }
+});
+
+</script>
+</html>
